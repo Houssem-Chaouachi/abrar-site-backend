@@ -5,13 +5,13 @@ const cors = require('cors');
 const mail = require('nodemailer');
 require('dotenv').config() 
 
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 app.post('/send-mail', async (req, res) => {
-    
+
+
     const abrarUser = await req.body
     
     res.send(abrarUser)
@@ -26,6 +26,14 @@ app.post('/send-mail', async (req, res) => {
             pass: process.env.PASSWORD
         }
     });
+    var mailOptions1 = {
+        to: abrarUser.email,
+        from: process.env.EMAIL,
+        subject: 'Abrar One',
+        text: 'Bonjour Mr Houssem, vous avez recu un mail de Mr/Mme ' + abrarUser.nom + ' :' + '\n\n'
+        + abrarUser.msg + '\n\n' + "Voici les coordonnées de l'utilisateur:" + '\n\n' + abrarUser.email + '\n\n'
+        + abrarUser.tel,
+    }
     var mailOptions = {
         to: 'houssemchaouachi09@gmail.com',
         from: process.env.EMAIL,
@@ -34,9 +42,21 @@ app.post('/send-mail', async (req, res) => {
         + abrarUser.msg + '\n\n' + "Voici les coordonnées de l'utilisateur:" + '\n\n' + abrarUser.email + '\n\n'
         + abrarUser.tel,
     }
+   
     
     
-    transporter.sendMail(mailOptions, (err, info) => {
+    transporter.sendMail(mailOptions, mailOptions1, (err, info) => {
+        if (err) {
+            console.log(err);
+            res.send({ message: "email error" })
+            
+        } else {
+            res.send({ message: "email send succesfully" })
+            
+        };
+    });
+    
+    transporter.sendMail(mailOptions1, (err, info) => {
         if (err) {
             console.log(err);
             res.send({ message: "email error" })
